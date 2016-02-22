@@ -56,7 +56,7 @@ curl http://localhost:9000/list/all
 
 ## insert new item
 
-Post data
+Post json data
 ```bash
 curl -H "Content-Type: application/json" -X POST -d '{"description":"incredible itian motorbike","price":400000.50, "size": 1000}' http://localhost:9000/shipment/new
 ```
