@@ -1,23 +1,18 @@
 import akka.actor.ActorSystem
-import akka.event.{LoggingAdapter, Logging}
+import akka.event.{Logging, LoggingAdapter}
+import akka.http.javadsl.server.HttpServiceBase
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.{ActorMaterializer, Materializer}
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
-import java.io.IOException
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import com.typesafe.config.{Config, ConfigFactory}
 import spray.json.DefaultJsonProtocol
 
+import scala.concurrent.ExecutionContextExecutor
 
-trait Service {
+
+trait Service extends HttpServiceBase with SprayJsonSupport {
 
   implicit val system: ActorSystem
 
@@ -29,12 +24,20 @@ trait Service {
 
   val logger: LoggingAdapter
 
+  var shipments = Shipment.shipments
+
   val routes = {
+
     get {
       path("alive") {
-        complete("Hello World")
+        complete("Hello to your shipments tracking API")
       }
-    }
+    } ~
+      get {
+        path("list" / "all") {
+          complete(Shipment.listToJson(shipments))
+        }
+      }
   }
 }
 

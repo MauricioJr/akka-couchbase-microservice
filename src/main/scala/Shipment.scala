@@ -1,3 +1,4 @@
+import akka.http.scaladsl.server.Route
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
 import org.json4s.ShortTypeHints
@@ -13,6 +14,8 @@ import org.json4s.ShortTypeHints
   case class ComplexShipment(description: String, fromCountry: String, connectionCountry: String, destinationCountry: String, price: Float, size: Int) extends Shipment
 
   object Shipment {
+    def toJson(shipments: List[Shipment]): Route = ???
+
     val shipments = List[Shipment](
       SimpleShipment(description = "Soya", price = 100.00f, size = 100),
       SimpleShipment(description = "Soya", price = 400.00f, size = 200),
@@ -21,7 +24,8 @@ import org.json4s.ShortTypeHints
     )
 
     private implicit val formats = Serialization.formats(ShortTypeHints(List(classOf[SimpleShipment], classOf[ComplexShipment])))
-    def toJson(ambers: List[SimpleShipment]): String = writePretty(shipments)
-    def toJson(amber: SimpleShipment): String = writePretty(shipments)
+    def listToJson(shipments: List[Shipment]): String = writePretty(shipments)
+    def toJson(shipment: Shipment): String = writePretty(shipment)
+
   }
 
