@@ -3,11 +3,9 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.http.javadsl.server.HttpServiceBase
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.server.Directives._
 import akka.stream.{ActorMaterializer, Materializer}
 import com.typesafe.config.{Config, ConfigFactory}
-import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -33,11 +31,30 @@ trait Service extends HttpServiceBase with SprayJsonSupport {
         complete("Hello to your shipments tracking API")
       }
     } ~
-      get {
-        path("list" / "all") {
-          complete(Shipment.listToJson(shipments))
+
+    get {
+      path("shipments") {
+        complete(Shipment.listToJson(shipments))
+      }
+    } ~
+
+    get {
+      path("shipment" / IntNumber / "details") { idx =>
+        complete(Shipment.toJson(shipments(idx)))
+      }
+    } ~
+
+    post {
+      path("shipment" / "new") {
+        parameters("description" ?, "price".as[Float], "size".as[Int]) { (description, price, size) =>
+          val newSimpleShipment = SimpleShipment(description.getOrElse("Shipment default description"), price, size)
+          shipments = newSimpleShipment :: shipments
+          complete {
+            "OK"
+          }
         }
       }
+    }
   }
 }
 
