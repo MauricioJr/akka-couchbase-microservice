@@ -18,7 +18,8 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http-experimental"               % akkaStreamV,
     "com.typesafe.akka" %% "akka-http-spray-json-experimental"    % akkaStreamV,
     "com.typesafe.akka" %% "akka-http-testkit-experimental"       % akkaStreamV,
-    "org.scalatest"     %% "scalatest"                            % scalaTestV % "test"
+    "org.scalatest"     %% "scalatest"                            % scalaTestV % "test",
+    "org.json4s"        %% "json4s-native"                        % "3.2.10"
   )
 }
 

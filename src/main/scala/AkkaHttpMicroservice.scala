@@ -16,17 +16,9 @@ import java.io.IOException
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import spray.json.DefaultJsonProtocol
 
-object InstagramAnalyzer {
-
-  private def getNumberOfLikes(): Option[Double] = {
-    () match {
-
-      case _ => None
-    }
-  }
-}
 
 trait Service {
+
   implicit val system: ActorSystem
 
   implicit def executor: ExecutionContextExecutor
@@ -42,9 +34,7 @@ trait Service {
       path("alive") {
         complete("Hello World")
       }
-
     }
-
   }
 }
 
