@@ -6,6 +6,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.stream.{ActorMaterializer, Materializer}
 import com.typesafe.config.{Config, ConfigFactory}
+import spray.json.{JsString, RootJsonFormat, DefaultJsonProtocol, JsonParser}
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -24,6 +25,13 @@ trait Service extends HttpServiceBase with SprayJsonSupport {
 
   var shipments = Shipment.shipments
 
+  object MyJsonProtocol extends DefaultJsonProtocol {
+    implicit val shipmentFormat = jsonFormat3(SimpleShipment)
+  }
+
+  import MyJsonProtocol._
+  import spray.json._
+
   val routes = {
 
     get {
@@ -31,27 +39,33 @@ trait Service extends HttpServiceBase with SprayJsonSupport {
         complete("Hello to your shipments tracking API")
       }
     } ~
-
     get {
       path("shipments") {
         complete(Shipment.listToJson(shipments))
       }
     } ~
-
     get {
       path("shipment" / IntNumber / "details") { idx =>
         complete(Shipment.toJson(shipments(idx)))
       }
     } ~
-
     post {
-      path("shipment" / "new") {
+      path("queryparameters" / "shipment" / "new") {
         parameters("description" ?, "price".as[Float], "size".as[Int]) { (description, price, size) =>
           val newSimpleShipment = SimpleShipment(description.getOrElse("Shipment default description"), price, size)
           shipments = newSimpleShipment :: shipments
           complete {
             "OK"
           }
+        }
+      }
+    } ~
+    post {
+      path("shipment" / "new") {
+        entity(as[String]) {
+          content =>
+            shipments = JsonParser(content).convertTo[SimpleShipment] :: shipments
+            complete("OK")
         }
       }
     }
