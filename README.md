@@ -1,6 +1,6 @@
 # Akka HTTP with Couchbase NoSQL
 
-High performance HTTP/no-blocking/distributed service
+High performance HTTP/no-blocking/distributed service API
 
 ## Testing
 
